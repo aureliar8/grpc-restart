@@ -1,0 +1,10 @@
+* Issue: Grpc restart blocked
+
+** 2 test with go client
+The client shutdown down after the 1st goaway if no active stream or just after the last stream finishes 
+** 2 test with java client
+
+-> Block if ongoing request
+
+** Wireshark
+ Go client close the tcp connection. Not in java , it's the server
