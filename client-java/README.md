@@ -5,5 +5,5 @@
 
 ```Bash
 mvn install
-java -cp target/grpctest-1.51.1.jar exoscale.sos.HelloWorldClient
+java -cp target/grpc-java-1.0-SNAPSHOT exoscale.sos.HelloWorldClient
 ```
