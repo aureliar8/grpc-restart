@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sos.exoscale;
+package exoscale.sos;
 
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
