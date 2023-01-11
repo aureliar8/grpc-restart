@@ -18,8 +18,6 @@ package exoscale.sos;
 
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.Grpc;
-import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 import java.util.concurrent.TimeUnit;
