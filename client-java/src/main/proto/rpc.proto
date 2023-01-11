@@ -1,7 +1,8 @@
 syntax = "proto3";
 
-package exoscale.sos;; 
+//package exoscale.sos; // if we use this pkg, client-java will complain with "unknown service..."
 option java_multiple_files = true;
+option java_package = "exoscale.sos";
 
 // The greeting service definition.
 service Greeter {
