@@ -4,33 +4,59 @@ import exoscale.sos.GreeterGrpc;
 import exoscale.sos.HelloReply;
 import exoscale.sos.HelloRequest;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import java.lang.Thread ;
+import io.grpc.netty.NettyChannelBuilder;
+import io.grpc.okhttp.OkHttpChannelBuilder;
+import io.grpc.stub.StreamObserver;
 
-
-
-// https://grpc.io/docs/languages/java/basics/#client
+import java.util.concurrent.TimeUnit;
 public class Client {
-    public static void main(String[] args) {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 6666)
+
+    public static void main(String[] args) throws InterruptedException {
+
+        // final ManagedChannel channel = ManagedChannelBuilder
+        //final ManagedChannel channel = OkHttpChannelBuilder
+        final ManagedChannel channel = NettyChannelBuilder
+            .forAddress("localhost", 6666)
             .usePlaintext()
             .build();
 
-        GreeterGrpc.GreeterBlockingStub stub =
-            GreeterGrpc.newBlockingStub(channel);
+        GreeterGrpc.GreeterStub astub =
+            GreeterGrpc.newStub(channel);
 
-	System.out.println("Starting RPC");
-        HelloReply helloResponse = stub.sayHello(
-            HelloRequest.newBuilder()
-                .setName("Ray")
-                .build());
+        HelloRequest req = HelloRequest.newBuilder()
+            .setName("Ray")
+            .build();
+        astub.sayHello(req, new StreamObserver<>() {
 
-        System.out.println(helloResponse);
-	try {
-	    Thread.sleep(10*1000, 0); //10s 
-	} catch (InterruptedException e) {
-	}
-	System.out.println("Shutting down the client channel");
-        channel.shutdown();
+            @Override
+            public void onNext(HelloReply helloReply) {
+                System.out.println(Thread.currentThread().getName());
+                System.out.println("GOT:" + helloReply);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                System.out.println("Error");
+            }
+
+            @Override
+            public void onCompleted() {
+                System.out.println(Thread.currentThread().getName());
+                System.out.println("Completed");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+        for (int i = 0; i < 20; i++) {
+            System.out.println("[Main]Waiting " + i + " ..." + channel.getState(false));
+            Thread.sleep(1000);
+        }
+        System.out.println("Exit");
+        channel.shutdownNow();
     }
+
 }

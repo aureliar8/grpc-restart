@@ -44,6 +44,10 @@
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
+      <artifactId>grpc-all</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf</artifactId>
     </dependency>
     <dependency>
@@ -65,6 +69,10 @@
       <artifactId>annotations-api</artifactId>
       <version>6.0.53</version>
       <scope>provided</scope> <!-- not needed at runtime -->
+    </dependency>
+    <dependency> <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.4.4</version>
     </dependency>
   </dependencies>
 
@@ -116,6 +124,14 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>10</source>
+          <target>10</target>
+        </configuration>
       </plugin>
     </plugins>
   </build>
