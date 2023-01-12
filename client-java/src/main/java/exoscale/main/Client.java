@@ -4,59 +4,34 @@ import exoscale.sos.GreeterGrpc;
 import exoscale.sos.HelloReply;
 import exoscale.sos.HelloRequest;
 import io.grpc.ManagedChannel;
-import io.grpc.netty.NettyChannelBuilder;
-import io.grpc.okhttp.OkHttpChannelBuilder;
-import io.grpc.stub.StreamObserver;
+import io.grpc.ManagedChannelBuilder;
+import java.lang.Thread ;
 
-import java.util.concurrent.TimeUnit;
+
+
+// https://grpc.io/docs/languages/java/basics/#client
 public class Client {
-
-    public static void main(String[] args) throws InterruptedException {
-
-        // final ManagedChannel channel = ManagedChannelBuilder
-        //final ManagedChannel channel = OkHttpChannelBuilder
-        final ManagedChannel channel = NettyChannelBuilder
-            .forAddress("localhost", 6666)
+    public static void main(String[] args) {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 6666)
             .usePlaintext()
             .build();
 
-        GreeterGrpc.GreeterStub astub =
-            GreeterGrpc.newStub(channel);
+        GreeterGrpc.GreeterBlockingStub stub =
+            GreeterGrpc.newBlockingStub(channel);
 
-        HelloRequest req = HelloRequest.newBuilder()
-            .setName("Ray")
-            .build();
-        astub.sayHello(req, new StreamObserver<>() {
+	System.out.println("Starting RPC");
+        HelloReply helloResponse = stub.sayHello(
+            HelloRequest.newBuilder()
+                .setName("Ray")
+                .build());
 
-            @Override
-            public void onNext(HelloReply helloReply) {
-                System.out.println(Thread.currentThread().getName());
-                System.out.println("GOT:" + helloReply);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                System.out.println("Error");
-            }
-
-            @Override
-            public void onCompleted() {
-                System.out.println(Thread.currentThread().getName());
-                System.out.println("Completed");
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-
-        for (int i = 0; i < 20; i++) {
-            System.out.println("[Main]Waiting " + i + " ..." + channel.getState(false));
-            Thread.sleep(1000);
-        }
-        System.out.println("Exit");
-        channel.shutdownNow();
+        System.out.println("Finished RPC");
+	System.out.println("Waiting 30 sec to not not close tcp connection manually too fast");
+	try {
+	    Thread.sleep(30*1000, 0); //30s 
+	} catch (InterruptedException e) {
+	}
+	System.out.println("Shutting down the client channel");
+        channel.shutdown();
     }
-
 }
