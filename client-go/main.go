@@ -24,7 +24,7 @@ func main() {
 	}
 	log.Println("Got an hello response:", resp)
 
-	log.Println("Waiting 30 sec to not force the tcp conn drop")
+	log.Println("Waiting 30 sec to not not force the tcp connection drop when the process dies")
 	time.Sleep(30 * time.Second)
 
 	err = conn.Close()
